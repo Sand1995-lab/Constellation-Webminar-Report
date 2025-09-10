@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Market Intelligence Report - September 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            overflow-x: hidden;
+            position: relative;
+            scroll-behavior: smooth;
+            perspective: 2000px;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            transform-style: preserve-3d;
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(0, 30, 20, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 
+                0 25px 80px rgba(0, 255, 127, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 127, 0.2);
+            animation: slideIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 127, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(127, 255, 212, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .content-wrapper:hover {
+            transform: rotateX(-2deg) rotateY(3deg) translateZ(20px);
+            box-shadow: 
+                0 40px 120px rgba(0, 255, 127, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(100px) rotateX(-15deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2.5em, 5vw, 4em);
+            background: linear-gradient(135deg, 
+                #00ff7f 0%, 
+                #7fffd4 25%, 
+                #00ff7f 50%, 
+                #32cd32 75%, 
+                #00ff7f 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(0, 255, 127, 0.5);
+            animation: energyFlow 4s ease-in-out infinite;
+            transform: translateZ(50px);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translateX(-100%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes energyFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #7fffd4;
+            margin: 30px 0 20px;
+            border-left: 5px solid #00ff7f;
+            padding-left: 20px;
+            text-shadow: 0 0 20px rgba(127, 255, 212, 0.5);
+            transform: translateZ(30px);
+            position: relative;
+        }
+
+        h2::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff7f, #32cd32);
+            box-shadow: 0 0 15px #00ff7f;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #98fb98;
+            margin: 20px 0 15px;
+            background: linear-gradient(90deg, rgba(0,255,127,0.1) 0%, transparent 100%);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(0,255,127,0.3);
+            transform: translateZ(20px);
+            transition: all 0.3s ease;
+        }
+
+        h3:hover {
+            background: linear-gradient(90deg, rgba(0,255,127,0.2) 0%, rgba(127,255,212,0.1) 100%);
+            transform: translateZ(30px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,255,127,0.3);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, 
+                rgba(0,255,127,0.15) 0%, 
+                rgba(127,255,212,0.1) 50%,
+                rgba(50,205,50,0.15) 100%);
+            border: 2px solid rgba(0,255,127,0.4);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 40px rgba(0,255,127,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: translateZ(30px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0,255,127,0.1), transparent);
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .highlight-box:hover {
+            transform: translateZ(50px) scale(1.03);
+            box-shadow: 
+                0 25px 60px rgba(0,255,127,0.4),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            border-color: rgba(0,255,127,0.8);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            perspective: 1000px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, 
+                rgba(0,30,20,0.9) 0%, 
+                rgba(0,50,30,0.9) 100%);
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.5),
+                0 0 30px rgba(0,255,127,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 2px solid rgba(0,255,127,0.3);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,127,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-15px) rotateX(10deg) rotateY(5deg) scale(1.05);
+            box-shadow: 
+                0 30px 80px rgba(0,0,0,0.6),
+                0 0 50px rgba(0,255,127,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            border-color: rgba(0,255,127,0.8);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00ff7f 0%, #7fffd4 50%, #32cd32 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0,255,127,0.8);
+            margin-bottom: 10px;
+            transform: translateZ(20px);
+        }
+
+        .stat-label {
+            color: #98fb98;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(152,251,152,0.5);
+            transform: translateZ(10px);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 450px;
+            margin: 40px 0;
+            background: linear-gradient(145deg, 
+                rgba(0,20,15,0.9) 0%, 
+                rgba(0,40,25,0.9) 100%);
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(0,255,127,0.2);
+            border: 2px solid rgba(0,255,127,0.3);
+            transform: translateZ(20px);
+            transition: all 0.4s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateZ(40px) scale(1.02);
+            box-shadow: 
+                0 30px 80px rgba(0,0,0,0.5),
+                inset 0 2px 0 rgba(0,255,127,0.4);
+        }
+
+        .key-points {
+            background: linear-gradient(145deg, 
+                rgba(0,25,15,0.95) 0%, 
+                rgba(0,40,25,0.9) 100%);
+            padding: 35px;
+            border-radius: 25px;
+            margin: 30px 0;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(0,255,127,0.1);
+            border: 2px solid rgba(0,255,127,0.2);
+            transform: translateZ(15px);
+        }
+
+        .key-points li {
+            margin: 20px 0;
+            padding-left: 40px;
+            position: relative;
+            color: #e0ffe0;
+            font-size: 1.1em;
+            line-height: 1.8;
+            text-shadow: 0 0 5px rgba(224,255,224,0.3);
+        }
+
+        .key-points li:before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #00ff7f;
+            font-size: 1.5em;
+            text-shadow: 0 0 15px #00ff7f;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 15px #00ff7f;
+            }
+            50% { 
+                transform: scale(1.2);
+                text-shadow: 0 0 25px #00ff7f, 0 0 35px #00ff7f;
+            }
+        }
+
+        .energy-icon {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00ff7f 0%, #32cd32 100%);
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(0,255,127,0.8),
+                inset 0 5px 15px rgba(255,255,255,0.2);
+            animation: energyPulse 3s infinite;
+        }
+
+        @keyframes energyPulse {
+            0% { 
+                box-shadow: 
+                    0 0 30px rgba(0,255,127,0.8),
+                    inset 0 5px 15px rgba(255,255,255,0.2);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 50px rgba(0,255,127,1),
+                    0 0 80px rgba(0,255,127,0.6),
+                    inset 0 5px 15px rgba(255,255,255,0.3);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 30px rgba(0,255,127,0.8),
+                    inset 0 5px 15px rgba(255,255,255,0.2);
+            }
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0,255,127,0.3);
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 2px solid rgba(0,255,127,0.5);
+            box-shadow: 0 0 15px rgba(0,255,127,0.3);
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: #00ff7f;
+            transform: scale(1.4);
+            box-shadow: 
+                0 0 25px rgba(0,255,127,0.8),
+                0 0 40px rgba(0,255,127,0.4);
+            border-color: #00ff7f;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(145deg, 
+                rgba(0,25,15,0.95) 0%, 
+                rgba(0,35,25,0.95) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(0,255,127,0.3);
+        }
+
+        th {
+            background: linear-gradient(135deg, #00ff7f 0%, #32cd32 100%);
+            color: #000;
+            padding: 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.1em;
+            text-shadow: none;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0,255,127,0.2);
+            color: #e0ffe0;
+            transition: all 0.3s ease;
+        }
+
+        tr:hover {
+            background: linear-gradient(90deg, 
+                rgba(0,255,127,0.1) 0%, 
+                rgba(127,255,212,0.05) 100%);
+            transform: scale(1.01);
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: #00ff7f;
+            font-size: 2.5em;
+            z-index: 100;
+            text-shadow: 0 0 20px #00ff7f;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { 
+                transform: translateX(-50%) translateY(0);
+            }
+            40% { 
+                transform: translateX(-50%) translateY(-20px);
+            }
+            60% { 
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        p {
+            color: #e0ffe0;
+            line-height: 1.8;
+            font-size: 1.1em;
+            text-shadow: 0 0 3px rgba(224,255,224,0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00ff7f 0%, #7fffd4 50%, #32cd32 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s linear infinite;
+        }
+
+        @keyframes gradientShift {
+            to { background-position: 200% center; }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 30px 20px;
+                margin: 20px 10px;
+            }
+            
+            .stat-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="nav-dots">
+        <div class="nav-dot active" onclick="scrollToPage(0)"></div>
+        <div class="nav-dot" onclick="scrollToPage(1)"></div>
+        <div class="nav-dot" onclick="scrollToPage(2)"></div>
+        <div class="nav-dot" onclick="scrollToPage(3)"></div>
+        <div class="nav-dot" onclick="scrollToPage(4)"></div>
+        <div class="nav-dot" onclick="scrollToPage(5)"></div>
+    </div>
+
+    <div class="scroll-indicator">⬇</div>
+
+    <!-- Page 1: Title Page -->
+    <div class="page" id="page1">
+        <div class="content-wrapper">
+            <div class="energy-icon"></div>
+            <h1 class="gradient-text">Energy Market Intelligence Report</h1>
+            <h2 style="text-align: center; border: none;">Trade Talks Promote U.S. Energy Dominance</h2>
+            <div class="highlight-box" style="text-align: center;">
+                <h3>September 11, 2025</h3>
+                <p style="font-size: 1.3em;">Constellation Energy Market Intelligence Webinar</p>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">107.4</div>
+                    <div class="stat-label">Bcf/day Production</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3,272</div>
+                    <div class="stat-label">Bcf Storage</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$3.92</div>
+                    <div class="stat-label">Cal'26 NYMEX</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Executive Summary -->
+    <div class="page" id="page2">
+        <div class="content-wrapper">
+            <h1>Executive Summary</h1>
+            <div class="key-points">
+                <h3>Key Market Developments</h3>
+                <ul style="list-style: none;">
+                    <li>Summer 2025 ranked as the ninth warmest on record, with August fading quickly after a strong first half</li>
+                    <li>Trade negotiations have secured over $1 trillion in U.S. energy export commitments through decade end</li>
+                    <li>Natural gas production holding near record levels at 107.4 Bcf/day in August</li>
+                    <li>Storage on track to reach effectively full capacity by end of October at 3,912 Bcf</li>
+                    <li>PJM capacity auction results set new records with rapidly increasing demand</li>
+                    <li>Offshore wind industry facing significant headwinds from regulatory changes</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3>Market Temperature Assessment</h3>
+                <p>The overall market sentiment remains cautiously bullish, with strong fundamentals in production and LNG exports balanced against economic uncertainties and weather variability.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Trade & Export Developments -->
+    <div class="page" id="page3">
+        <div class="content-wrapper">
+            <h1>Trade Negotiations & Energy Exports</h1>
+            <h2>Major LNG Export Commitments</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>LNG Volume</th>
+                            <th>Annual Value</th>
+                            <th>Additional Terms</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>South Korea</td>
+                            <td>0.4 Bcf/d</td>
+                            <td>$511M</td>
+                            <td>Tariff reductions on carbon capture & battery tech</td>
+                        </tr>
+                        <tr>
+                            <td>Japan</td>
+                            <td>0.54 Bcf/d</td>
+                            <td>$690M</td>
+                            <td>Nuclear licensing reform</td>
+                        </tr>
+                        <tr>
+                            <td>India</td>
+                            <td>0.8 Bcf/d</td>
+                            <td>$1Bn</td>
+                            <td>Plus 250k bbls/d oil</td>
+                        </tr>
+                        <tr>
+                            <td>Mexico</td>
+                            <td>2.5 Bcf/d</td>
+                            <td>$3.2Bn</td>
+                            <td>Pipeline expansion, tariff-free electricity trade</td>
+                        </tr>
+                        <tr>
+                            <td>European Union</td>
+                            <td>1.35 Bcf/d</td>
+                            <td>$1.7Bn</td>
+                            <td>3-year commitment including oil & nuclear</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="highlight-box">
+                <h3>Total Export Commitments</h3>
+                <p style="font-size: 1.4em;"><strong class="gradient-text">5.5 Bcf/d</strong> of natural gas heading overseas through new trade agreements, with over <strong class="gradient-text">$1 Trillion</strong> in total energy commitments secured before decade end.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 4: Natural Gas Fundamentals -->
+    <div class="page" id="page4">
+        <div class="content-wrapper">
+            <h1>Natural Gas Market Fundamentals</h1>
+            <div class="chart-container">
+                <canvas id="gasProductionChart"></canvas>
+            </div>
+            <div class="key-points">
+                <h3>Production Highlights</h3>
+                <ul style="list-style: none;">
+                    <li>August production averaged 107.4 Bcf/day vs. 101.9 Bcf/day in August 2024</li>
+                    <li>Year-to-date production through 8/31 is 105.2 Bcf/day, up ~3.5 Bcf/d from 2024</li>
+                    <li>EQT reports 50% gain in completion efficiency, 10% decrease in well costs</li>
+                    <li>Production holding near record levels despite economic headwinds</li>
+                </ul>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">55 Bcf</div>
+                    <div class="stat-label">Last Week Injection</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">+5.5%</div>
+                    <div class="stat-label">vs. 5-Year Average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">43.4 Bcf/d</div>
+                    <div class="stat-label">L48 Power Burns</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 5: Price Forecasts -->
+    <div class="page" id="page5">
+        <div class="content-wrapper">
+            <h1>Energy Price Forecasts</h1>
+            <h2>NYMEX Natural Gas Forward Curves</h2>
+            <div class="chart-container">
+                <canvas id="nymexChart"></canvas>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">$3.92</div>
+                    <div class="stat-label">Cal 2026</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$3.93</div>
+                    <div class="stat-label">Cal 2027</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$3.81</div>
+                    <div class="stat-label">Cal 2028</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$3.69</div>
+                    <div class="stat-label">Cal 2029</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 6: Market Outlook -->
+    <div class="page" id="page6">
+        <div class="content-wrapper">
+            <h1>Market Outlook & Strategic Implications</h1>
+            <div class="highlight-box" style="background: linear-gradient(135deg, rgba(0,255,127,0.25) 0%, rgba(127,255,212,0.2) 50%, rgba(50,205,50,0.25) 100%);">
+                <h2 style="border: none; text-align: center;">Market Temperature Assessment</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="energy-icon" style="width: 50px; height: 50px;"></div>
+                        <div class="stat-label">Weather: Neutral</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="energy-icon" style="width: 50px; height: 50px;"></div>
+                        <div class="stat-label">Production: Bullish</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="energy-icon" style="width: 50px; height: 50px;"></div>
+                        <div class="stat-label">Storage: Neutral</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="energy-icon" style="width: 50px; height: 50px;"></div>
+                        <div class="stat-label">LNG: Bullish</div>
+                    </div>
+                </div>
+            </div>
+            <div class="key-points">
+                <h2>Strategic Implications</h2>
+                <ul style="list-style: none;">
+                    <li><strong>Supply Dynamics:</strong> Record production levels providing market stability, but storage approaching capacity limits may require production moderation</li>
+                    <li><strong>Demand Growth:</strong> Data center expansion and LNG export commitments driving unprecedented demand growth in key markets</li>
+                    <li><strong>Infrastructure Challenges:</strong> Offshore wind setbacks creating opportunities for natural gas infrastructure development</li>
+                    <li><strong>Price Outlook:</strong> Forward curves reflect bullish near-term fundamentals with backwardation through 2027</li>
+                    <li><strong>Global Competition:</strong> Russia-China pipeline developments and European diversification efforts reshaping global energy flows</li>
+                    <li><strong>Market Resilience:</strong> U.S. energy dominance positioning continues to strengthen through strategic trade partnerships</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Three.js animated background
+        let scene, camera, renderer, particles;
+        
+        function initBackground() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 1);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Create animated particle system
+            const particleCount = 1500;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 100;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+                
+                // Green energy color palette
+                const colorChoice = Math.random();
+                if (colorChoice < 0.4) {
+                    colors[i * 3] = 0;      // R
+                    colors[i * 3 + 1] = 1;  // G
+                    colors[i * 3 + 2] = 0.5; // B
+                } else if (colorChoice < 0.7) {
+                    colors[i * 3] = 0.5;    // R
+                    colors[i * 3 + 1] = 1;  // G
+                    colors[i * 3 + 2] = 0.8; // B
+                } else {
+                    colors[i * 3] = 0.2;    // R
+                    colors[i * 3 + 1] = 0.8; // G
+                    colors[i * 3 + 2] = 0.2; // B
+                }
+                
+                sizes[i] = Math.random() * 3 + 1;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.ShaderMaterial({
+                vertexShader: `
+                    attribute float size;
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size * (300.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    void main() {
+                        float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+                        if (r > 0.5) discard;
+                        float alpha = 1.0 - (r * 2.0);
+                        gl_FragColor = vec4(vColor, alpha * 0.8);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.z = 30;
+
+            // Add ambient lighting effect
+            const ambientLight = new THREE.AmbientLight(0x004d1a, 0.3);
+            scene.add(ambientLight);
+        }
+
+        function animateBackground() {
+            requestAnimationFrame(animateBackground);
+            
+            const time = Date.now() * 0.001;
+            const positions = particles.geometry.attributes.position.array;
+            
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i] += Math.sin(time + i) * 0.01;
+                positions[i + 1] += Math.cos(time + i) * 0.01;
+                positions[i + 2] += Math.sin(time + i * 0.5) * 0.005;
+            }
+            
+            particles.geometry.attributes.position.needsUpdate = true;
+            particles.rotation.y += 0.001;
+            particles.rotation.x += 0.0005;
+            
+            renderer.render(scene, camera);
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Gas Production Chart
+            const gasCtx = document.getElementById('gasProductionChart');
+            if (gasCtx) {
+                new Chart(gasCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        datasets: [{
+                            label: '2025 Production (Bcf/d)',
+                            data: [103.2, 104.1, 105.8, 106.2, 105.9, 106.8, 107.1, 107.4],
+                            borderColor: '#00ff7f',
+                            backgroundColor: 'rgba(0, 255, 127, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00ff7f',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }, {
+                            label: '2024 Production (Bcf/d)',
+                            data: [99.8, 100.2, 101.1, 100.9, 101.3, 101.8, 102.1, 101.9],
+                            borderColor: '#7fffd4',
+                            backgroundColor: 'rgba(127, 255, 212, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#7fffd4',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e0ffe0' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#98fb98' },
+                                grid: { color: 'rgba(152, 251, 152, 0.2)' }
+                            },
+                            y: {
+                                ticks: { color: '#98fb98' },
+                                grid: { color: 'rgba(152, 251, 152, 0.2)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // NYMEX Chart
+            const nymexCtx = document.getElementById('nymexChart');
+            if (nymexCtx) {
+                new Chart(nymexCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Cal 2026', 'Cal 2027', 'Cal 2028', 'Cal 2029', 'Cal 2030'],
+                        datasets: [{
+                            label: 'NYMEX Forward Prices ($/MMBtu)',
+                            data: [3.92, 3.93, 3.81, 3.69, 3.58],
+                            backgroundColor: [
+                                'rgba(0, 255, 127, 0.8)',
+                                'rgba(127, 255, 212, 0.8)',
+                                'rgba(50, 205, 50, 0.8)',
+                                'rgba(0, 255, 127, 0.6)',
+                                'rgba(127, 255, 212, 0.6)'
+                            ],
+                            borderColor: [
+                                '#00ff7f',
+                                '#7fffd4',
+                                '#32cd32',
+                                '#00ff7f',
+                                '#7fffd4'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e0ffe0' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#98fb98' },
+                                grid: { color: 'rgba(152, 251, 152, 0.2)' }
+                            },
+                            y: {
+                                ticks: { color: '#98fb98' },
+                                grid: { color: 'rgba(152, 251, 152, 0.2)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Navigation functionality
+        function scrollToPage(index) {
+            const pages = document.querySelectorAll('.page');
+            const dots = document.querySelectorAll('.nav-dot');
+            
+            if (pages[index]) {
+                pages[index].scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[index].classList.add('active');
+            }
+        }
+
+        // Scroll event handling
+        let ticking = false;
+        
+        function updateActiveNavDot() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const pages = document.querySelectorAll('.page');
+                    const dots = document.querySelectorAll('.nav-dot');
+                    const scrollPos = window.scrollY + window.innerHeight / 2;
+                    
+                    pages.forEach((page, index) => {
+                        const pageTop = page.offsetTop;
+                        const pageBottom = pageTop + page.offsetHeight;
+                        
+                        if (scrollPos >= pageTop && scrollPos <= pageBottom) {
+                            dots.forEach(dot => dot.classList.remove('active'));
+                            if (dots[index]) dots[index].classList.add('active');
+                        }
+                    });
+                    
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        // Parallax scroll effects
+        function handleParallax() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            if (particles) {
+                particles.rotation.y = scrolled * 0.0002;
+                particles.position.y = rate * 0.01;
+            }
+        }
+
+        // Window resize handler
+        function handleResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initBackground();
+            animateBackground();
+            initCharts();
+            
+            // Hide scroll indicator after first scroll
+            window.addEventListener('scroll', () => {
+                const scrollIndicator = document.querySelector('.scroll-indicator');
+                if (window.scrollY > 100 && scrollIndicator) {
+                    scrollIndicator.style.opacity = '0';
+                }
+                updateActiveNavDot();
+                handleParallax();
+            });
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Add smooth CSS scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+        });
+
+        // Add touch and keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const currentActive = document.querySelector('.nav-dot.active');
+            const currentIndex = Array.from(document.querySelectorAll('.nav-dot')).indexOf(currentActive);
+            
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                if (currentIndex < 5) scrollToPage(currentIndex + 1);
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentIndex > 0) scrollToPage(currentIndex - 1);
+            }
+        });
+
+        // Touch gesture handling for mobile
+        let startY = 0;
+        let endY = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            endY = e.changedTouches[0].clientY;
+            const diff = startY - endY;
+            
+            if (Math.abs(diff) > 50) {
+                const currentActive = document.querySelector('.nav-dot.active');
+                const currentIndex = Array.from(document.querySelectorAll('.nav-dot')).indexOf(currentActive);
+                
+                if (diff > 0 && currentIndex < 5) {
+                    scrollToPage(currentIndex + 1);
+                } else if (diff < 0 && currentIndex > 0) {
+                    scrollToPage(currentIndex - 1);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
